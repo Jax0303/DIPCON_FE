@@ -1,0 +1,117 @@
+// Login.scss
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.loginBox {
+  width: 400px;
+  padding: 40px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.logo {
+  font-size: 36px;
+  color: #FF5722; // DIPCON 로고 색상
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.tabMenu {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  color: #888;
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: #FF5722; // 활성화된 탭 주황색
+  font-weight: bold;
+  border-bottom: 2px solid #FF5722;
+}
+
+.inputBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    outline: none;
+
+    &::placeholder {
+      color: #aaa;
+    }
+  }
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.securityToggle {
+  background: #FF5722;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.loginButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #FF5722;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #e64a19;
+  }
+}
+
+.links {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #888;
+
+  a {
+    color: #FF5722;
+    text-decoration: none;
+    margin: 0 5px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
