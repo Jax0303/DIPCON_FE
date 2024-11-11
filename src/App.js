@@ -5,8 +5,8 @@ import List from './pages/list/List';
 import Login from './pages/login/Login';
 import New from './pages/new/New';
 import Single from './pages/single/Single';
-import Register from './pages/users/Register'; // Register 컴포넌트 import
-import RegisterSuccess from './pages/users/RegisterSuccess'; // RegisterSuccess 컴포넌트 import
+import Register from './pages/users/Register';
+import RegisterSuccess from './pages/users/RegisterSuccess';
 import { DarkModeContext } from './context/darkModeContext';
 import { productInputs, userInputs } from './formSource';
 import './style/dark.scss';
@@ -18,6 +18,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} /> {/* /home 경로 추가 */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/register-success" element={<RegisterSuccess />} />

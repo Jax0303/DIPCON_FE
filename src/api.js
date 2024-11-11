@@ -1,7 +1,7 @@
 // frontend/src/api.js
 import axios from 'axios';
 
-const BASE_URL = 'http://127.0.0.1:8000'; // 백엔드 서버 URL
+const BASE_URL = 'http://127.0.0.1:3001'; // 백엔드 서버 URL
 
 // 사용자 등록
 export const registerUser = async (userData) => {
@@ -28,7 +28,11 @@ export const getUsers = async () => {
 // 로그인
 export const login = async (username, password) => {
     try {
-        const response = await axios.post(`${BASE_URL}/login`, { username, password });
+        const response = await axios.post(
+            `${BASE_URL}/login`, 
+            { username, password }, 
+            { withCredentials: true }  // 쿠키 전송을 위한 옵션 추가
+        );
         return response.data;
     } catch (error) {
         console.error('Error logging in:', error);

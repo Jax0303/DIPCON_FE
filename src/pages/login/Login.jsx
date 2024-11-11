@@ -1,9 +1,11 @@
+//Login.jsx
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './Login.scss';
 
-const BASE_URL = 'http://127.0.0.1:8000'; // 백엔드 서버의 URL
+
+const BASE_URL = 'http://127.0.0.1:3001'; // 백엔드 서버의 URL
 
 const Login = () => {
   const [id, setId] = useState('');
@@ -20,7 +22,7 @@ const Login = () => {
       if (response.status === 200) {
         console.log('Login successful:', response.data);
         // 로그인 성공 시 홈으로 이동
-        navigate('/Home');
+        navigate('/home');
       }
     } catch (error) {
       console.error('Error during login:', error.response?.data || error.message);
