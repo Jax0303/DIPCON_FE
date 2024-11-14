@@ -10,30 +10,33 @@ import RegisterSuccess from './pages/users/RegisterSuccess';
 import { DarkModeContext } from './context/darkModeContext';
 import { productInputs, userInputs } from './formSource';
 import './style/dark.scss';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
   return (
-    <div className={darkMode ? 'app dark' : 'app'}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home" element={<Home />} /> {/* /home 경로 추가 */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/register-success" element={<RegisterSuccess />} />
-          <Route path="/users" element={<List />} />
-          <Route path="/users/:userId" element={<Single />} />
-          <Route path="/users/new" element={<Register />} />
-          <Route path="/products" element={<List />} />
-          <Route path="/products/:productId" element={<Single />} />
-          <Route
-            path="/products/new"
-            element={<New inputs={productInputs} title="Add New Product" />}
-          />
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <AuthProvider>
+      <div className={darkMode ? 'app dark' : 'app'}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} /> {/* /home 경로 추가 */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/register-success" element={<RegisterSuccess />} />
+            <Route path="/users" element={<List />} />
+            <Route path="/users/:userId" element={<Single />} />
+            <Route path="/users/new" element={<Register />} />
+            <Route path="/products" element={<List />} />
+            <Route path="/products/:productId" element={<Single />} />
+            <Route
+              path="/products/new"
+              element={<New inputs={productInputs} title="Add New Product" />}
+            />
+          </Routes>
+        </BrowserRouter>
+      </div>
+    </AuthProvider>
   );
 }
 

@@ -1,85 +1,112 @@
 .sidebar {
-  flex: 1;
-  border-radius: 0.5px solid rgb(230, 227, 227);
-  background-color: white;
+  width: 250px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
 
-  /* 최상단, 사이드바 css */
   .top {
-    height: 50px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    padding: 20px 0;
 
     .logo {
       font-size: 20px;
       font-weight: bold;
-      color: #FF5722;
+      color: #FF6B00;
+      margin-bottom: 15px;
     }
   }
-  hr {
-    height: 0;
-    border: 0.5px solid rgb(230, 227, 227);
+
+  .requestSignatureButton {
+    width: 80%;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    background-color: #FF6B00;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    margin: 15px auto;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #e64a19;
+    }
   }
 
-  /* 중간 */
+  hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 0;
+  }
+
   .center {
-    padding-left: 10px;
+    flex: 1;
+    padding: 20px;
 
     ul {
       list-style: none;
-      margin: 0;
       padding: 0;
 
-      .title {
-        font-size: 12px;
-        font-weight: bold;
-        color: #999;
-        margin-top: 15px;
-        margin-bottom: 5px;
-      }
       li {
         display: flex;
         align-items: center;
-        padding: 5px;
+        padding: 10px;
         cursor: pointer;
+        border-radius: 5px;
+        color: #555;
+        transition: background-color 0.3s;
 
         &:hover {
-          background-color: #ece8ff;
+          background-color: #f5f5f5;
         }
+
         .icon {
-          font-size: 18px;
-          color: #FF5722;
+          font-size: 20px;
+          color: #FF6B00;
+          margin-right: 10px;
         }
+
         span {
           font-size: 14px;
-          font-weight: 600;
-          color: #888;
-          margin-left: 10px;
+          font-weight: 500;
         }
       }
     }
-  }
-  .bottom {
-    display: flex;
-    align-items: center;
-    margin: 10px;
 
-    .colorOption {
-      width: 20px;
-      height: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      border: 1px solid #7451f8;
-      margin: 5px;
+    .submenu {
+      padding-left: 30px;
 
-      &:nth-child(1) {
-        background-color: whitesmoke;
+      li {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        font-size: 13px;
+        color: #777;
+
+        &:hover {
+          color: #FF6B00;
+        }
+
+        .icon {
+          font-size: 18px;
+          margin-right: 8px;
+        }
       }
-      &:nth-child(2) {
-        background-color: #333;
-      }
-      &:nth-child(3) {
-        background-color: darkblue;
+    }
+
+    .expandIcon {
+      font-size: 20px;
+      color: #FF6B00;
+      transition: transform 0.3s ease;
+
+      &.rotate {
+        transform: rotate(180deg);
       }
     }
   }

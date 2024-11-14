@@ -1,5 +1,6 @@
 // Navbar.jsx
-import React, { useContext, useEffect, useState } from 'react';
+
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.scss';
 
@@ -11,15 +12,11 @@ import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNone
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
 import { DarkModeContext } from '../../context/darkModeContext';
+import { AuthContext } from '../../context/AuthContext';
 
 const Navbar = () => {
   const { dispatch } = useContext(DarkModeContext);
-  const [loggedInUser, setLoggedInUser] = useState(null);
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('loggedInUser'));
-    setLoggedInUser(user);
-  }, []);
+  const { loggedInUser } = useContext(AuthContext);
 
   return (
     <div className="navbar">
@@ -30,7 +27,7 @@ const Navbar = () => {
         </div>
         <div className="items">
           <div className="item">
-            <LanguageOutlinedIcon className="icon" />
+            <LanguageOutlinedIcon className="icon" /> 
             Language
           </div>
           <div className="item">
@@ -52,7 +49,7 @@ const Navbar = () => {
           </div>
           <div className="item">
             {loggedInUser ? (
-              <img src={loggedInUser.img || "/logo/logo.png"} alt="avatar" className="avatar" />
+              <span className="greeting"> 안녕하세요!</span>
             ) : (
               <Link to="/login" className="link loginButton">로그인</Link>
             )}

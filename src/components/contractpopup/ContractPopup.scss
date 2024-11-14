@@ -1,0 +1,163 @@
+/* src/components/contractpopup/ContractPopup.scss */
+
+.contractPopupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.contractPopup {
+  width: 400px; /* 팝업 창 너비 조정 */
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  .popupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h2 {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .closeButton {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
+
+  .tabSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .freeBadge {
+      background-color: #ff5722;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+  }
+
+  .partition {
+    height: 1px;
+    background-color: #ddd;
+    margin: 15px 0;
+  }
+
+  .signingMethod {
+    margin-bottom: 20px;
+
+    .radioGroup {
+      display: flex;
+      gap: 10px;
+
+      label {
+        display: flex;
+        align-items: center;
+
+        input {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+
+  .signerList {
+    .signerSection {
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+
+      .signerHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        font-weight: bold;
+
+        .removeSignerButton {
+          background: none;
+          border: none;
+          font-size: 16px;
+          cursor: pointer;
+        }
+      }
+
+      input {
+        width: 100%; /* 입력란 너비를 100%로 설정하여 팝업 안에 맞춤 */
+        padding: 8px;
+        margin-bottom: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box; /* 입력란의 너비가 padding과 border를 포함하도록 */
+      }
+    }
+
+    .addSignerButton {
+      width: 100%;
+      padding: 10px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #e64a19;
+      }
+    }
+  }
+
+  .popupFooter {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+
+    .backButton,
+    .nextButton {
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .backButton {
+      background-color: #ddd;
+      color: #333;
+
+      &:hover {
+        background-color: #ccc;
+      }
+    }
+
+    .nextButton {
+      background-color: #ff5722;
+      color: white;
+
+      &:hover {
+        background-color: #e64a19;
+      }
+    }
+  }
+}

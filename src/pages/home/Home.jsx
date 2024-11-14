@@ -1,35 +1,55 @@
-import React from 'react'
-import './Home.scss'
+import React from 'react';
+import './Home.scss';
 
-import Sidebar from '../../components/sidebar/Sidebar'
-import Navbar from '../../components/navbar/Navbar'
-import Widget from '../../components/widget/Widget'
-import Featured from '../../components/featured/Featured'
-import Chart from '../../components/chart/Chart'
-import Table from '../../components/table/Table'
+import Sidebar from '../../components/sidebar/Sidebar';
+import Navbar from '../../components/navbar/Navbar';
+
 const Home = () => {
   return (
     <div className="home">
       <Sidebar />
       <div className="homeContainer">
         <Navbar />
-        <div className="widgets">
-          <Widget type="user" />
-          <Widget type="order" />
-          <Widget type="earning" />
-          <Widget type="balance" />
+        <header className="welcomeMessage">
+          스트리머와 게임 개발자를 위한<br/> 저작권 문제 해결 솔루션
+        </header>
+        <div className="statusIcons">
+          <div className="statusIcon">
+            <div className="icon">👤</div>
+            <div>계약자 수</div>
+            <div>100</div>
+          </div>
+          <div className="statusIcon">
+            <div className="icon">📄</div>
+            <div>계약 문서 수</div>
+            <div>200</div>
+          </div>
+          <div className="statusIcon">
+            <div className="icon">📈</div>
+            <div>진행 중 계약</div>
+            <div>50</div>
+          </div>
         </div>
-        <div className="charts">
-          <Featured />
-          <Chart title="계약 수 변동 현황" aspect={2 / 1} />
-        </div>
-        <div className="listContainer">
-          <div className="listTitle">최근 계약 내역</div>
-          <Table />
+        <div className="cardSection">
+          <div className="card">
+            <div className="cardIcon">📁</div>
+            <p>내 파일함</p>
+            <button>Start</button>
+          </div>
+          <div className="card">
+            <div className="cardIcon">📄</div>
+            <p>내 문서</p>
+            <button>Start</button>
+          </div>
+          <div className="card">
+            <div className="cardIcon">📑</div>
+            <p>내 서식함</p>
+            <button>Start</button>
+          </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

@@ -17,11 +17,15 @@ const Login = () => {
       const response = await axios.post(
         `${BASE_URL}/login`,
         { id, password },
-        { withCredentials: true }  // 쿠키 전송을 위한 옵션
+        { withCredentials: true }
       );
       if (response.status === 200) {
-        console.log('Login successful:', response.data);
-        // 로그인 성공 시 홈으로 이동
+        console.log('Response Data:', response.data); // 서버 응답 데이터 확인
+        const userData = { username: response.data.id, img: response.data.img };
+        localStorage.setItem('loggedInUser', JSON.stringify(userData));
+        console.log('Logged In User:', localStorage.getItem('loggedInUser')); // 저장 확인
+        
+        // 로그인 성공 시 홈 화면으로 이동
         navigate('/home');
       }
     } catch (error) {
@@ -29,6 +33,8 @@ const Login = () => {
       alert('ID 또는 비밀번호가 잘못되었습니다.');
     }
   };
+  
+  
 
   return (
     <div className="loginContainer">
