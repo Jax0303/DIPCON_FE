@@ -1,62 +1,77 @@
-// Navbar.jsx
-
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import './Navbar.scss';
-
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
-import FullscreenExitOutlinedIcon from '@mui/icons-material/FullscreenExitOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
-import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
-import { DarkModeContext } from '../../context/darkModeContext';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import { AuthContext } from '../../context/AuthContext';
 
 const Navbar = () => {
-  const { dispatch } = useContext(DarkModeContext);
   const { loggedInUser } = useContext(AuthContext);
 
   return (
-    <div className="navbar">
-      <div className="wrapper">
-        <div className="search">
-          <input type="text" placeholder="검색.." />
-          <SearchOutlinedIcon />
+    <header className="navbar">
+      <div className="navbar__wrapper">
+        {/* 네비게이션 메뉴 */}
+        <ul className="navbar__menu">
+          <li>
+            <NavLink to="/contract-management" className={({ isActive }) => (isActive ? "active" : "")}>
+              계약관리
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/document-management" className={({ isActive }) => (isActive ? "active" : "")}>
+              문서관리
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/transaction-integration" className={({ isActive }) => (isActive ? "active" : "")}>
+              거래통합
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/settings" className={({ isActive }) => (isActive ? "active" : "")}>
+              설정하기
+            </NavLink>
+          </li>
+        </ul>
+
+        {/* 우측 샘플 유틸리티 아이콘 */}
+        <div className="navbar__utilities">
+          <div className="icon">
+            <NotificationsNoneOutlinedIcon />
+          </div>
+          <div className="icon">
+            <ChatBubbleOutlineOutlinedIcon />
+          </div>
+          <div className="icon">
+            <SettingsOutlinedIcon />
+          </div>
         </div>
-        <div className="items">
-          <div className="item">
-            <LanguageOutlinedIcon className="icon" /> 
-            Language
-          </div>
-          <div className="item">
-            <DarkModeOutlinedIcon className="icon" onClick={() => dispatch({ type: 'TOGGLE' })} />
-          </div>
-          <div className="item">
-            <FullscreenExitOutlinedIcon className="icon" />
-          </div>
-          <div className="item">
-            <NotificationsNoneOutlinedIcon className="icon" />
-            <div className="counter">1</div>
-          </div>
-          <div className="item">
-            <ChatBubbleOutlineOutlinedIcon className="icon" />
-            <div className="counter">2</div>
-          </div>
-          <div className="item">
-            <ListOutlinedIcon className="icon" />
-          </div>
-          <div className="item">
-            {loggedInUser ? (
-              <span className="greeting"> 안녕하세요!</span>
-            ) : (
-              <Link to="/login" className="link loginButton">로그인</Link>
-            )}
-          </div>
+
+        {/* 도움말 및 문의하기 샘플 버튼 */}
+        <div className="navbar__buttons">
+          <Link to="/help" className="helpButton">
+            <HelpOutlineIcon className="icon" />
+            도움말
+          </Link>
+          <Link to="/contact" className="contactButton">
+            <QuestionAnswerOutlinedIcon className="icon" />
+            문의하기
+          </Link>
+          {loggedInUser ? (
+            <span className="username">안녕하세요, {loggedInUser.name} 님!</span>
+          ) : (
+            <Link to="/login" className="loginButton">
+              로그인
+            </Link>
+          )}
         </div>
+
       </div>
-    </div>
+    </header>
   );
 };
 

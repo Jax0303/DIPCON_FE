@@ -1,0 +1,8 @@
+import React from 'react';
+
+const LoginRegister = () => {
+  console.log('LoginRegister 렌더링 성공');
+  return <div>Login/Register 화면</div>;
+};
+
+export default LoginRegister;

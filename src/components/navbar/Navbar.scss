@@ -1,105 +1,87 @@
 .navbar {
-  height: 50px;
-  border-bottom: 0.5px solid rgb(232, 228, 228);
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: #555;
+  width: 100%;
+  background-color: #f09152; // 네비게이션 바 배경 색상
+  box-shadow: 0 5px 1px rgba(0, 0, 0, 0.1);
+  padding: 0 20px;
+  border-radius: 17px;
 
-  .wrapper {
-    width: 100%;
-    padding: 20px;
+  &__wrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 60px;
+  }
 
-    .search {
-      display: flex;
-      align-items: center;
-      border: 0.5px solid lightgray;
-      padding: 3px;
-      
-      input {
-        border: none;
-        outline: none;
-        background: transparent;
+  &__menu {
+    display: flex;
+    list-style: none;
+    gap: 30px;
 
-        &::placeholder {
-          font-size: 12px;
-        }
-      }
-    }
+    li {
+      a {
+        text-decoration: none;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 500;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background-color 0.1s;
 
-    .items {
-      display: flex;
-      align-items: center;
-
-      .item {
-        display: flex;
-        align-items: center;
-        margin-right: 20px;
-        position: relative;
-
-        .icon {
-          font-size: 20px;
-        }
-
-        .avatar {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-        }
-
-        .counter {
-          width: 15px;
-          height: 15px;
-          background-color: red;
-          border-radius: 50%;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 10px;
-          font-weight: bold;
-          position: absolute;
-          top: -5px;
-          right: -5px;
+        &:hover {
+          background-color: #eee8e5;
+          color: #f37806;
+          border-radius: 10px;
         }
       }
     }
   }
-}
 
-// .link 스타일
-.link {
-  text-decoration: none;
-  color: #FF5722;
-  font-weight: bold;
-  padding: 8px 12px;
-  border: 1px solid #FF5722;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  &__utilities {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-  &:hover {
-    background-color: #FF5722;
-    color: white;
+    .icon {
+      color: #ffffff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s;
+
+      &:hover {
+        color: #d8f3dc;
+      }
+    }
   }
-}
 
-// .loginButton에 .link 스타일 직접 적용
-.loginButton {
-  text-decoration: none;
-  color: #FF5722;
-  font-weight: bold;
-  padding: 8px 12px;
-  border: 1px solid #FF5722;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  &__buttons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 
-  &:hover {
-    background-color: #FF5722;
-    color: white;
+    .helpButton,
+    .contactButton,
+    .loginButton {
+      display: flex;
+      align-items: center;
+      background-color: #f84f00;
+      color: #f5f4ef;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 5px 10px;
+      border: 1px solid #a39f9b;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      .icon {
+        font-size: 1.1rem;
+        margin-right: 5px;
+      }
+
+      &:hover {
+        background-color: #eee8e5;
+        color: #f37806;
+      }
+    }
   }
 }

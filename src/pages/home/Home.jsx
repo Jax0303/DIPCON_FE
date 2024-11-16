@@ -11,7 +11,7 @@ const Home = () => {
       <div className="homeContainer">
         <Navbar />
         <header className="welcomeMessage">
-          스트리머와 게임 개발자를 위한<br/> 저작권 문제 해결 솔루션
+          Sample Text
         </header>
         <div className="statusIcons">
           <div className="statusIcon">
@@ -26,7 +26,7 @@ const Home = () => {
           </div>
           <div className="statusIcon">
             <div className="icon">📈</div>
-            <div>진행 중 계약</div>
+            <div>진행중인 계약</div>
             <div>50</div>
           </div>
         </div>

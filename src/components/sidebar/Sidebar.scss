@@ -1,3 +1,6 @@
+/* Pretendard 폰트 적용 */
+@import url('https://cdn.jsdelivr.net/npm/pretendard@latest/dist/web/static/pretendard.css');
+
 .sidebar {
   width: 250px;
   height: 100vh;
@@ -5,6 +8,7 @@
   flex-direction: column;
   background-color: #fff;
   border-right: 1px solid #ddd;
+  font-family: 'Pretendard', sans-serif;
 
   .top {
     display: flex;
@@ -13,7 +17,7 @@
     padding: 20px 0;
 
     .logo {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: bold;
       color: #FF6B00;
       margin-bottom: 15px;
@@ -22,8 +26,8 @@
 
   .requestSignatureButton {
     width: 80%;
-    padding: 10px;
-    font-size: 14px;
+    padding: 12px;
+    font-size: 16px;
     font-weight: bold;
     color: white;
     background-color: #FF6B00;
@@ -49,6 +53,11 @@
     flex: 1;
     padding: 20px;
 
+    .categoryPartition {
+      border-top: 1px solid #ddd;
+      margin: 15px 0;
+    }
+
     ul {
       list-style: none;
       padding: 0;
@@ -56,7 +65,7 @@
       li {
         display: flex;
         align-items: center;
-        padding: 10px;
+        padding: 12px;
         cursor: pointer;
         border-radius: 5px;
         color: #555;
@@ -67,14 +76,20 @@
         }
 
         .icon {
-          font-size: 20px;
+          font-size: 22px;
           color: #FF6B00;
           margin-right: 10px;
         }
 
         span {
-          font-size: 14px;
-          font-weight: 500;
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+          transition: color 0.3s;
+
+          &:hover {
+            color: #FF6B00;
+          }
         }
       }
     }
@@ -86,7 +101,7 @@
         display: flex;
         align-items: center;
         padding: 8px 0;
-        font-size: 13px;
+        font-size: 14px;
         color: #777;
 
         &:hover {
@@ -101,7 +116,7 @@
     }
 
     .expandIcon {
-      font-size: 20px;
+      font-size: 22px;
       color: #FF6B00;
       transition: transform 0.3s ease;
 

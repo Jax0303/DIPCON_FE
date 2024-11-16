@@ -3,14 +3,15 @@
 
   .homeContainer {
     flex: 6;
-    padding: 20px;
+    padding: 40px; // 패딩을 40px로 늘려서 더 넉넉하게 보이도록 조정
     background-color: #f5f5f5;
 
     .welcomeMessage {
       font-size: 1.8rem;
       font-weight: bold;
       color: #333;
-      margin-bottom: 20px;
+      margin-top: 30px;
+      margin-bottom: 30px; // 여백 추가
       text-align: center;
       line-height: 1.5;
     }
@@ -18,7 +19,7 @@
     .statusIcons {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 20px;
+      margin-bottom: 30px; // 여백 추가
 
       .statusIcon {
         display: flex;
@@ -26,14 +27,14 @@
         align-items: center;
         background-color: #ffffff;
         border-radius: 10px;
-        padding: 20px;
+        padding: 30px; // 패딩을 30px로 조정
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         text-align: center;
-        width: 120px;
+        width: 150px; // 아이콘 섹션의 크기 증가
 
         .icon {
-          font-size: 2rem;
-          margin-bottom: 10px;
+          font-size: 2.5rem; // 아이콘 크기 증가
+          margin-bottom: 15px; // 여백 추가
         }
 
         div {
@@ -46,25 +47,26 @@
     .cardSection {
       display: flex;
       justify-content: space-around;
+      gap: 20px; // 카드 사이의 여백 추가
 
       .card {
         background-color: #ffffff;
         border-radius: 10px;
-        padding: 20px;
+        padding: 30px; // 패딩을 30px로 조정
         text-align: center;
-        width: 180px;
+        width: 200px; // 카드의 폭을 증가
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
         .cardIcon {
-          font-size: 3rem;
-          margin-bottom: 10px;
+          font-size: 3.5rem; // 아이콘 크기 증가
+          margin-bottom: 15px; // 여백 추가
         }
 
         p {
-          font-size: 1.1rem;;
+          font-size: 1.1rem;
           font-weight: bold;
           color: #333;
-          margin-bottom: 10px;
+          margin-bottom: 15px; // 여백 추가
         }
 
         button {
@@ -72,7 +74,7 @@
           color: #fff;
           border: none;
           border-radius: 5px;
-          padding: 10px 20px;
+          padding: 10px 25px; // 버튼 패딩 조정
           cursor: pointer;
           font-size: 0.9rem;
         }
