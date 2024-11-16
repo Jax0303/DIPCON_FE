@@ -13,7 +13,8 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import DeleteIcon from '@mui/icons-material/Delete';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Stage1 from '../contractpopup/Stage1.jsx';
+
+import Stage1 from '../contractpopup/Stage1'; // Stage1 컴포넌트 import
 
 const Sidebar = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -55,7 +56,7 @@ const Sidebar = () => {
               <li><SaveIcon className="icon" /> 임시 저장</li>
             </ul>
           )}
-              <div className="categoryPartition" /> {/* 파티션 추가 */}
+          <div className="categoryPartition" />
 
           <li className="expandable" onClick={() => toggleExpand('smartTransfer')}>
             <FolderIcon className="icon" />
@@ -67,57 +68,16 @@ const Sidebar = () => {
               <li><FolderIcon className="icon" /> 대량전송</li>
             </ul>
           )}
-              <div className="categoryPartition" /> {/* 파티션 추가 */}
-
-          <li className="expandable" onClick={() => toggleExpand('sharedContract')}>
-            <ShareIcon className="icon" />
-            <span>공유 계약</span>
-            <ExpandMoreIcon className={`expandIcon ${expanded.sharedContract ? 'rotate' : ''}`} />
-          </li>
-          {expanded.sharedContract && (
-            <ul className="submenu">
-              <li><FolderSharedIcon className="icon" /> 공유 문서함</li>
-            </ul>
-          )}
-                <div className="categoryPartition" /> {/* 파티션 추가 */}
-
-          <li className="expandable" onClick={() => toggleExpand('myFolder')}>
-            <LibraryBooksIcon className="icon" />
-            <span>내 폴더함</span>
-            <ExpandMoreIcon className={`expandIcon ${expanded.myFolder ? 'rotate' : ''}`} />
-          </li>
-          {expanded.myFolder && (
-            <ul className="submenu">
-              <li><InsertDriveFileIcon className="icon" /> 템플릿</li>
-              <li><InsertDriveFileIcon className="icon" /> 동의서</li>
-            </ul>
-          )}
-              <div className="categoryPartition" /> {/* 파티션 추가 */}
-
-          <li className="expandable" onClick={() => toggleExpand('externalStorage')}>
-            <FolderIcon className="icon" />
-            <span>외부 문서 보관</span>
-            <ExpandMoreIcon className={`expandIcon ${expanded.externalStorage ? 'rotate' : ''}`} />
-          </li>
-          {expanded.externalStorage && (
-            <ul className="submenu">
-              <li><InsertDriveFileIcon className="icon" /> 기본 문서함</li>
-            </ul>
-          )}
-              <div className="categoryPartition" /> {/* 파티션 추가 */}
+          <div className="categoryPartition" />
 
           <li>
             <DeleteIcon className="icon" />
             <span>휴지통</span>
           </li>
-          
-          <li>
-            <QueryStatsIcon className="icon" />
-            <span> 이관데이터 조회</span>
-          </li>
         </ul>
       </div>
-      <Stage1 isOpen={isPopupOpen} onClose={handleClosePopup} />
+      {/* Stage1 팝업 */}
+      {isPopupOpen && <Stage1 isOpen={isPopupOpen} onClose={handleClosePopup} />}
     </div>
   );
 };

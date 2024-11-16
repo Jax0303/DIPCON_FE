@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LoginRegister.css';
 
-const LoginRegister = () => {
+const LoginRegister = ({ onLoginSuccess }) => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const container = document.getElementById('container');
 
@@ -20,19 +23,23 @@ const LoginRegister = () => {
       container.classList.add('sign-in');
     }, 200);
 
-    // 클릭 이벤트 리스너 추가
     const pointerElements = document.querySelectorAll('.pointer');
     pointerElements.forEach((element) => {
       element.addEventListener('click', toggle);
     });
 
-    // 컴포넌트 언마운트 시 이벤트 제거
     return () => {
       pointerElements.forEach((element) => {
         element.removeEventListener('click', toggle);
       });
     };
   }, []);
+
+  // Sign in 버튼 클릭 시 호출
+  const handleSignInClick = () => {
+    onLoginSuccess(); // App.js의 isLoggedIn 상태를 true로 변경
+    navigate('/home'); // Home으로 이동
+  };
 
   return (
     <div id="container" className="container">
@@ -78,14 +85,7 @@ const LoginRegister = () => {
                 <i className="bx bxs-lock-alt"></i>
                 <input type="password" placeholder="Password" />
               </div>
-              <button>Sign in</button>
-              <p>
-                <b>Forgot password?</b>
-              </p>
-              <p>
-                <span>Don't have an account?</span>
-                <b className="pointer">Sign up here</b>
-              </p>
+              <button onClick={handleSignInClick}>Sign in</button>
             </div>
           </div>
         </div>
@@ -94,7 +94,7 @@ const LoginRegister = () => {
         <div className="row content-row">
           <div className="col align-items-center flex-col">
             <div className="text sign-in">
-              <h2>DIPCON</h2> 
+              <h2>DIPCON</h2>
             </div>
           </div>
         </div>
