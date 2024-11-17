@@ -7,7 +7,6 @@ const LoginRegister = ({ onLoginSuccess }) => {
 
   useEffect(() => {
     const container = document.getElementById('container');
-
     if (!container) {
       console.error('Container element not found!');
       return;
@@ -35,10 +34,9 @@ const LoginRegister = ({ onLoginSuccess }) => {
     };
   }, []);
 
-  // Sign in 버튼 클릭 시 호출
   const handleSignInClick = () => {
-    onLoginSuccess(); // App.js의 isLoggedIn 상태를 true로 변경
-    navigate('/home'); // Home으로 이동
+    onLoginSuccess();
+    navigate('/home');
   };
 
   return (
@@ -86,6 +84,13 @@ const LoginRegister = ({ onLoginSuccess }) => {
                 <input type="password" placeholder="Password" />
               </div>
               <button onClick={handleSignInClick}>Sign in</button>
+              <p>
+                <b>Forgot password?</b>
+              </p>
+              <p>
+                <span>Don't have an account?</span>
+                <b className="pointer">Sign up here</b>
+              </p>
             </div>
           </div>
         </div>
