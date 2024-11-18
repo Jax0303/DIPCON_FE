@@ -12,6 +12,10 @@ import Stage1 from './components/contractpopup/Stage1.jsx';
 import Stage2 from './components/contractpopup/Stage2';
 
 function App() {
+<<<<<<< HEAD
+=======
+  
+>>>>>>> a3a1779 (.)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLoginSuccess = () => {

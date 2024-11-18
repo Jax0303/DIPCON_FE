@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login/Register</title>
+  <link rel="stylesheet" href="loginregister.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+  <div id="container" class="container">
+    <div class="row">
+      <!-- SIGN UP -->
+      <div class="col align-items-center flex-col sign-up">
+        <div class="form-wrapper align-items-center">
+          <div class="form sign-up">
+            <div class="input-group">
+              <i class="bx bxs-user"></i>
+              <input type="text" placeholder="Username">
+            </div>
+            <div class="input-group">
+              <i class="bx bx-mail-send"></i>
+              <input type="email" placeholder="Email">
+            </div>
+            <div class="input-group">
+              <i class="bx bxs-lock-alt"></i>
+              <input type="password" placeholder="Password">
+            </div>
+            <div class="input-group">
+              <i class="bx bxs-lock-alt"></i>
+              <input type="password" placeholder="Confirm password">
+            </div>
+            <button>Sign up</button>
+            <p>
+              <span>Already have an account?</span>
+              <b class="pointer" onclick="toggle()">Sign in here</b>
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- SIGN IN -->
+      <div class="col align-items-center flex-col sign-in">
+        <div class="form-wrapper align-items-center">
+          <div class="form sign-in">
+            <div class="input-group">
+              <i class="bx bxs-user"></i>
+              <input type="text" placeholder="Username">
+            </div>
+            <div class="input-group">
+              <i class="bx bxs-lock-alt"></i>
+              <input type="password" placeholder="Password">
+            </div>
+            <button>Sign in</button>
+            <p>
+              <b>Forgot password?</b>
+            </p>
+            <p>
+              <span>Don't have an account?</span>
+              <b class="pointer" onclick="toggle()">Sign up here</b>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="loginregister.js"></script>
+</body>
+</html>
