@@ -17,9 +17,12 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Switch } from "@/components/ui/switch"
 import axios from "axios"
+import { CustomCondition } from '../types';
+import Image from 'next/image';
+import * as api from '../src/api';
 
 // API 기본 URL 설정
-const API_BASE_URL = "http://127.0.0.1:8000" // FastAPI 서버 URL
+const API_BASE_URL = "http://180.210.82.162"
 
 // 쿠키 인증 사용 설정
 axios.defaults.withCredentials = true
@@ -39,7 +42,48 @@ const slideIn = {
   transition: { duration: 0.3 }
 }
 
-// 서명자 인터페이스 정의
+// 드롭다운 애니메이션 수정
+const dropdownAnimation = {
+  hidden: {
+    opacity: 0,
+    height: 0,
+    marginTop: 0,
+    transition: {
+      height: { duration: 0.2, ease: "easeInOut" },
+      opacity: { duration: 0.15, ease: "easeInOut" }
+    }
+  },
+  visible: {
+    opacity: 1,
+    height: "auto",
+    marginTop: 8,
+    transition: {
+      height: { duration: 0.2, ease: "easeInOut" },
+      opacity: { duration: 0.15, ease: "easeInOut" }
+    }
+  }
+};
+
+const subItemAnimation = {
+  hidden: {
+    x: -10,
+    opacity: 0,
+    transition: {
+      duration: 0.15,
+      ease: "easeInOut"
+    }
+  },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.15,
+      ease: "easeInOut"
+    }
+  }
+};
+
+// 먼저 모든 인터페이스 정의
 interface Signer {
   name: string
   email: string
@@ -63,39 +107,192 @@ interface ContractConditions {
 
 // 계약 인터페이스 정의
 interface Contract {
-  id: string
-  title: string
-  signers: Signer[]
-  date: string
-  conditions: ContractConditions
-  status: string
+  id: string;
+  title: string;
+  streamer_id: string;
+  game_id: string;
+  min_broadcast_length: number;
+  max_broadcast_length: number;
+  isfree: boolean;
+  custom_conditions?: CustomCondition;
+  streamer_signed: boolean;
+  developer_signed: boolean;
+  status: string;
+  last_updated: string;
+  signers?: Signer[];
 }
 
-// API 함수들
-const saveContract = async (contractData: any) => {
-  const response = await axios.post(`${API_BASE_URL}/contract/save`, contractData)
-  return response.data
+// 새로운 인터페이스 추가
+interface GameMonetizedStatus {
+  gameID: string;
+  isFree: boolean;
 }
 
-const getContractsByStatus = async (status?: string) => {
-  const response = await axios.get(`${API_BASE_URL}/contracts/`, {
-    params: { status },
-  })
-  return response.data
+interface RevenueData {
+  gameID: string;
+  startDate: string;
+  endDate: string;
+  dateUnit: string;
+  subtotal: Array<Record<string, number>>;
+  total: number;
 }
 
-const getContractStatusList = async () => {
-  const response = await axios.get(`${API_BASE_URL}/contracts/status_list`)
-  return response.data
+interface GameTags {
+  gameID: string;
+  tags: string[];
 }
 
-const getContractByGameId = async (gameId: string) => {
-  const response = await axios.get(`${API_BASE_URL}/contract/${gameId}`)
-  return response.data
+interface GameInfo {
+  name: string;
+
 }
+
+// 독립적인 하위 컴포넌트들을 먼저 정의
+const ContractDetails: React.FC = () => {
+  const [gameId, setGameId] = useState<string>("");
+  const [dateRange, setDateRange] = useState({
+    startDate: "",
+    endDate: ""
+  });
+
+  useEffect(() => {
+    const fetchGameDetails = async () => {
+      try {
+        const response = await api.get(`/games/${gameId}/details`);
+        // 데이터 처리 로직
+      } catch (error) {
+        console.error("게임 상세 정보 조회 실패:", error);
+      }
+    };
+
+    if (gameId) {
+      fetchGameDetails();
+    }
+  }, [gameId, dateRange]);
+
+  return (
+    <Card className="mt-4">
+      {/* 컴포넌트 내용 */}
+    </Card>
+  );
+};
+
+// ContractTable 인터페이스 정의 추가
+interface ContractTableProps {
+  contracts: Contract[];
+  sortOrder: 'asc' | 'desc';
+  toggleSortOrder: () => void;
+  handleContractSelect: (contract: Contract) => Promise<void>;
+  selectedContract: Contract | null;
+}
+
+// ContractTable 컴포넌트 수정
+const ContractTable: React.FC<ContractTableProps> = ({ 
+  contracts, 
+  sortOrder, 
+  toggleSortOrder, 
+  handleContractSelect, 
+  selectedContract 
+}) => {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>계약 번호</TableHead>
+          <TableHead>계약 제목</TableHead>
+          <TableHead>서명자</TableHead>
+          <TableHead className="cursor-pointer" onClick={toggleSortOrder}>
+            계약 날짜
+            <ArrowUpDown className="ml-2 h-4 w-4 inline-block" />
+          </TableHead>
+          <TableHead>상태</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {contracts.map((contract) => (
+          <TableRow
+            key={contract.id}
+            className={`cursor-pointer transition-colors ${selectedContract?.id === contract.id // 선택된 계약과 현재 계약이 같으면 색상 변경
+                ? 'bg-orange-50 border-l-4 border-l-orange-500'
+                : 'hover:bg-gray-50'
+              }`}
+            onClick={() => handleContractSelect(contract)}
+          >
+            <TableCell>{contract.id}</TableCell>
+            <TableCell>{contract.title}</TableCell>
+            <TableCell>
+              {contract.signers ?
+                contract.signers.map(s => s.name).join(', ') :
+                '서명자 없음'
+              }
+            </TableCell>
+            <TableCell>{contract.last_updated}</TableCell>
+            <TableCell>{contract.status}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
+
+const GameDetailsCard: React.FC<{ gameId: string }> = ({ gameId }) => {
+  const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
+  const [monetizedStatus, setMonetizedStatus] = useState<GameMonetizedStatus | null>(null);
+  const [revenueData, setRevenueData] = useState<RevenueData | null>(null);
+  const [playCountData, setPlayCountData] = useState<RevenueData | null>(null);
+  const [gameTags, setGameTags] = useState<GameTags | null>(null);
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0]
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 계약 목록 및 상태 가져오기
+        await Promise.all([fetchContracts(), fetchContractStatusList()]);
+
+        // 게임 상세 정보 가져오기
+        const fetchGameDetails = async () => {
+          try {
+            const [info, monetizedStatus, tags] = await Promise.all([
+              api.getGameInfo(gameId),
+              api.getGameMonetizedStatus(gameId),
+              api.getGameTags(gameId)
+            ]);
+            setGameInfo(info);
+            setMonetizedStatus(monetizedStatus);
+            setGameTags(tags);
+
+            const [revenue, playCount] = await Promise.all([
+              api.getGameRevenue(gameId, dateRange.startDate, dateRange.endDate),
+              api.getGamePlayCount(gameId, dateRange.startDate, dateRange.endDate)
+            ]);
+            setRevenueData(revenue);
+            setPlayCountData(playCount);
+          } catch (error) {
+            console.error('게임 상세 정보 조회 실패:', error);
+          }
+        };
+
+        await fetchGameDetails();
+      } catch (error) {
+        console.error('데이터 가져오기 실패:', error);
+      }
+    };
+
+    fetchData();
+  }, [dateRange.startDate, dateRange.endDate, gameId]);
+
+  return (
+    <Card className="mt-4">
+      {/* 컴포넌트 내용 */}
+    </Card>
+  );
+};
 
 // 메인 컴포넌트
-export default function Home() {
+const Home: React.FC = () => {
   // 상태 변수들 정의
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [openMenus, setOpenMenus] = useState<string[]>([])
@@ -123,6 +320,14 @@ export default function Home() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const [contractStatusList, setContractStatusList] = useState<string[]>([])
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>(undefined)
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
+  const [gameMonetizedStatus, setGameMonetizedStatus] = useState<GameMonetizedStatus | null>(null);
+  const [revenueData, setRevenueData] = useState<RevenueData | null>(null);
+  const [playCountData, setPlayCountData] = useState<RevenueData | null>(null);
+  const [gameTags, setGameTags] = useState<GameTags | null>(null);
+  const [activeMenu, setActiveMenu] = useState<string>('');
+  const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // 컴포넌트 마운트 시 계약 목록과 상태 목록 가져오기
   useEffect(() => {
@@ -136,31 +341,31 @@ export default function Home() {
   // 계약 목록 가져오기 함수
   const fetchContracts = async () => {
     try {
-      const data = await getContractsByStatus(selectedStatus)
-      setContracts(data)
+      const data = await api.getContracts();
+      setContracts(data);
     } catch (error) {
-      console.error("계약 목록 가져오기 오류:", error)
+      console.error('계약 목록 가져오기 실패:', error);
     }
-  }
+  };
 
   // 계약 상태 목록 가져오기 함수
   const fetchContractStatusList = async () => {
     try {
-      const data = await getContractStatusList()
-      setContractStatusList(data)
+      const statusList = await api.getContractStatusList();
+      setContractStatusList(statusList);
     } catch (error) {
-      console.error("계약 상태 목록 가져오기 오류:", error)
+      console.error("계약 상태 리스트 조회 실패:", error);
     }
-  }
+  };
 
   // 메뉴 토글 함수
   const toggleMenu = (menu: string) => {
-    setOpenMenus(prev => 
+    setOpenMenus(prev =>
       prev.includes(menu) ? prev.filter(item => item !== menu) : [...prev, menu]
     )
   }
 
-  // 서명자 추가 함수
+  // 서명자 추가 수
   const handleAddSigner = () => {
     setSigners([...signers, { name: '', email: '' }])
   }
@@ -170,7 +375,7 @@ export default function Home() {
     setSigners(signers.filter((_, i) => i !== index))
   }
 
-  // 서명자 정보 업데이트 함수
+  // 서자 정보 업데이트 함수
   const updateSigner = (index: number, field: keyof Signer, value: string) => {
     const newSigners = [...signers]
     newSigners[index] = { ...newSigners[index], [field]: value }
@@ -178,29 +383,53 @@ export default function Home() {
   }
 
   // 계약 조건 변경 함수
-  const handleContractConditionsChange = (field: keyof ContractConditions, value: string | boolean) => {
-    setContractConditions(prev => ({ ...prev, [field]: value }))
-  }
+  const handleContractConditionsChange = (
+    field: keyof ContractConditions,
+    value: string | boolean
+  ): void => {
+    setContractConditions(prev => ({ ...prev, [field]: value }));
+  };
 
   // 계약 제출 함수
   const handleSubmit = async () => {
     try {
-      const newContract: Contract = {
-        id: `C${String(contracts.length + 1).padStart(4, '0')}`,
-        title: contractConditions.title,
-        signers: signers,
-        date: new Date().toISOString().split('T')[0],
-        conditions: contractConditions,
-        status: 'Draft', // 초기 상태
-      }
-      await saveContract(newContract)
-      setContracts([...contracts, newContract])
-      setIsModalOpen(false)
-      setIsConfirmDialogOpen(false)
-      // 폼 상태 초기화
-      setCurrentStep(1)
-      setSigners([{ name: '', email: '' }])
-      setContractConditions({
+        const contractData = {
+            title: contractConditions.title,
+            streamer_id: contractConditions.streamerId,
+            game_id: contractConditions.gameId,
+            min_broadcast_length: parseInt(contractConditions.minBroadcastTime),
+            max_broadcast_length: parseInt(contractConditions.maxBroadcastTime),
+            isfree: !contractConditions.isMonetized,
+            custom_conditions: {
+                banned_keywords: contractConditions.forbiddenWords?.split(',').map(word => word.trim()) || [],
+                no_spoilers: !contractConditions.allowSpoilers,
+                monetization_allowed: contractConditions.allowContentMonetization,
+                no_bgm_usage: !contractConditions.allowSoundtrackUse,
+                no_violent_content: !contractConditions.allowViolentContent
+            }
+        };
+
+        const response = await api.saveContract(contractData);
+        
+        // 성공 시 상태 업데이트
+        setContracts(prevContracts => [...prevContracts, response]);
+        setIsModalOpen(false);
+        setIsConfirmDialogOpen(false);
+        
+        // 폼 초기화
+        resetForm();
+        
+    } catch (error) {
+        console.error("계약 저장 오류:", error);
+        // 에러 처리 로직 추가
+    }
+  };
+
+  // 폼 초기화 함수
+  const resetForm = () => {
+    setCurrentStep(1);
+    setSigners([{ name: '', email: '' }]);
+    setContractConditions({
         title: '',
         gameTitle: '',
         streamerId: '',
@@ -213,14 +442,10 @@ export default function Home() {
         allowContentMonetization: false,
         allowSoundtrackUse: false,
         allowViolentContent: false,
-      })
-      setEmailReminder(false)
-      setSmsReminder(false)
-    } catch (error) {
-      console.error("계약 저장 오류:", error)
-      // TODO: 에러 처리 (예: 사용자에게 알림)
-    }
-  }
+    });
+    setEmailReminder(false);
+    setSmsReminder(false);
+  };
 
   // 정렬 순서 토글 함수
   const toggleSortOrder = () => {
@@ -229,26 +454,26 @@ export default function Home() {
 
   // 정렬된 계약 목록
   const sortedContracts = [...contracts].sort((a, b) => {
-    return sortOrder === 'asc' 
-      ? new Date(a.date).getTime() - new Date(b.date).getTime()
-      : new Date(b.date).getTime() - new Date(a.date).getTime()
+    return sortOrder === 'asc'
+      ? new Date(a.last_updated).getTime() - new Date(b.last_updated).getTime()
+      : new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
   })
 
   // 사이드바 아이템 정의
   const sidebarItems = [
     { title: '홈', icon: HomeIcon, href: '#', key: 'home' },
-    { 
-      title: '계약', 
-      icon: FileText, 
+    {
+      title: '계약',
+      icon: FileText,
       subItems: [
-        { title: '계약 생성', href: '#', key: 'create-contract' },
+
         { title: '계약 목록', href: '#', key: 'contract-list' },
         { title: '서명 대기', href: '#', key: 'pending-signatures' },
       ]
     },
-    { 
-      title: '대시보드', 
-      icon: BarChart2, 
+    {
+      title: '대시보드',
+      icon: BarChart2,
       subItems: [
         { title: '계약 통계', href: '#', key: 'contract-stats' },
         { title: '수익 분석', href: '#', key: 'revenue-analysis' },
@@ -257,6 +482,91 @@ export default function Home() {
     { title: '고객지원', icon: HelpCircle, href: '#', key: 'support' },
     { title: '설정', icon: Settings, href: '#', key: 'settings' },
   ]
+
+  // 계약 상세 정보 조회 함수
+  const handleContractSelect = async (contract: Contract) => {
+    setSelectedContract(contract);
+    if (contract.game_id) {
+      try {
+        const [monetizedStatus, tags] = await Promise.all([
+          api.getGameMonetizedStatus(contract.game_id),
+          api.getGameTags(contract.game_id)
+        ]);
+        setGameMonetizedStatus(monetizedStatus);
+        setGameTags(tags);
+
+        const endDate = new Date().toISOString().split('T')[0];
+        const startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split('T')[0];
+
+        const [revenue, playCount] = await Promise.all([
+          api.getGameRevenue(contract.game_id, startDate, endDate),
+          api.getGamePlayCount(contract.game_id, startDate, endDate)
+        ]);
+        setRevenueData(revenue);
+        setPlayCountData(playCount);
+      } catch (error) {
+        console.error('데이터 조회 실패:', error);
+      }
+    }
+  }
+
+  // 계약 목록 테이블에 클릭 이벤트 추가
+  const ContractTable = () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>계약 번호</TableHead>
+          <TableHead>계약 제목</TableHead>
+          <TableHead>서명자</TableHead>
+          <TableHead className="cursor-pointer" onClick={toggleSortOrder}>
+            계약 날짜
+            <ArrowUpDown className="ml-2 h-4 w-4 inline-block" />
+          </TableHead>
+          <TableHead>상태</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sortedContracts.map((contract) => (
+          <TableRow
+            key={contract.id}
+            className={`cursor-pointer transition-colors ${selectedContract?.id === contract.id // 선택된 계약과 현재 계약이 같으면 색상 변경
+                ? 'bg-orange-50 border-l-4 border-l-orange-500'
+                : 'hover:bg-gray-50'
+              }`}
+            onClick={() => handleContractSelect(contract)}
+          >
+            <TableCell>{contract.id}</TableCell>
+            <TableCell>{contract.title}</TableCell>
+            <TableCell>
+              {contract.signers ?
+                contract.signers.map(s => s.name).join(', ') :
+                '서명자 없음'
+              }
+            </TableCell>
+            <TableCell>{contract.last_updated}</TableCell>
+            <TableCell>{contract.status}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+
+  // 메뉴 클릭 핸들러 
+  const handleMenuClick = (menuKey: string, subMenuKey?: string) => {
+    if (subMenuKey) {
+      // 서브메뉴 클릭 시
+      setActiveMenu(menuKey);
+      setActiveSubMenu(subMenuKey);
+      setActiveTab(subMenuKey);
+    } else {
+      // 메인메뉴 클릭 시
+      setActiveMenu(menuKey);
+      setActiveSubMenu(null); // 서브메뉴 선택 초기화
+      setActiveTab(menuKey);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100 text-gray-900">
@@ -270,8 +580,8 @@ export default function Home() {
         <div className="mb-4">
           <h1 className="text-2xl font-bold text-orange-500">DIPCON</h1>
         </div>
-        <Button 
-          onClick={() => setIsModalOpen(true)} 
+        <Button
+          onClick={() => setIsModalOpen(true)}
           className="mb-8 bg-orange-500 hover:bg-orange-600 text-white flex items-center gap-2"
         >
           <FileSignature className="h-5 w-5" />
@@ -287,24 +597,42 @@ export default function Home() {
                       <item.icon className="h-5 w-5 mr-2 text-orange-500" />
                       <span>{item.title}</span>
                     </div>
-                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${openMenus.includes(item.title) ? 'transform rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform duration-200 ${openMenus.includes(item.title) ? 'transform rotate-180' : ''
+                        }`}
+                    />
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="pl-4 space-y-2 mt-2">
-                    {item.subItems.map((subItem, subIndex) => (
-                      <a 
-                        key={subIndex} 
-                        href={subItem.href} 
-                        className="block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
-                        onClick={() => setActiveTab(subItem.key)}
-                      >
-                        {subItem.title}
-                      </a>
-                    ))}
+                  <CollapsibleContent asChild>
+                    <motion.div
+                      initial="hidden"
+                      animate={openMenus.includes(item.title) ? "visible" : "hidden"}
+                      variants={dropdownAnimation}
+                      className="overflow-hidden"
+                    >
+                      <div className="pl-4 space-y-2">
+                        <AnimatePresence mode="wait">
+                          {item.subItems.map((subItem, subIndex) => (
+                            <motion.a
+                              key={subIndex}
+                              variants={subItemAnimation}
+                              initial="hidden"
+                              animate="visible"
+                              exit="hidden"
+                              href={subItem.href}
+                              className="block p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
+                              onClick={() => setActiveTab(subItem.key)}
+                            >
+                              {subItem.title}
+                            </motion.a>
+                          ))}
+                        </AnimatePresence>
+                      </div>
+                    </motion.div>
                   </CollapsibleContent>
                 </Collapsible>
               ) : (
-                <a 
-                  href={item.href} 
+                <a
+                  href={item.href}
                   className="flex items-center p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
                   onClick={() => setActiveTab(item.key)}
                 >
@@ -324,8 +652,8 @@ export default function Home() {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input 
-                  placeholder="검색..." 
+                <Input
+                  placeholder="검색..."
                   className="pl-9 w-64"
                 />
               </div>
@@ -417,12 +745,14 @@ export default function Home() {
                       <div className="space-y-4">
                         {contracts.slice(0, 5).map((contract, index) => (
                           <div key={index} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                            <div>
-                              <p className="font-medium">{contract.title}</p>
-                              <p className="text-sm text-gray-500">{contract.signers.map(s => s.name).join(', ')}</p>
+                            <div className="flex justify-between items-center">
+                              <span className="font-medium">{contract.title}</span>
+                              <span className="text-sm text-gray-500">
+                                {contract.signers?.map(s => s.name).join(', ') || '서명자 없음'}
+                              </span>
                             </div>
                             <div className="text-right">
-                              <p className="text-sm text-gray-500">{contract.date}</p>
+                              <p className="text-sm text-gray-500">{contract.last_updated}</p>
                             </div>
                           </div>
                         ))}
@@ -489,31 +819,14 @@ export default function Home() {
                         ))}
                       </select>
                     </div>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>계약 번호</TableHead>
-                          <TableHead>계약 제목</TableHead>
-                          <TableHead>서명자</TableHead>
-                          <TableHead className="cursor-pointer" onClick={toggleSortOrder}>
-                            계약 날짜
-                            <ArrowUpDown className="ml-2 h-4 w-4 inline-block" />
-                          </TableHead>
-                          <TableHead>상태</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {sortedContracts.map((contract) => (
-                          <TableRow key={contract.id}>
-                            <TableCell>{contract.id}</TableCell>
-                            <TableCell>{contract.title}</TableCell>
-                            <TableCell>{contract.signers.map(s => s.name).join(', ')}</TableCell>
-                            <TableCell>{contract.date}</TableCell>
-                            <TableCell>{contract.status}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                    <ContractTable 
+                      contracts={sortedContracts}
+                      sortOrder={sortOrder}
+                      toggleSortOrder={toggleSortOrder}
+                      handleContractSelect={handleContractSelect}
+                      selectedContract={selectedContract}
+                    />
+                    <ContractDetails />
                   </CardContent>
                 </Card>
               </motion.div>
@@ -576,7 +889,9 @@ export default function Home() {
                           <Input
                             id="contract-title"
                             value={contractConditions.title}
-                            onChange={(e) => handleContractConditionsChange('title', e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                              handleContractConditionsChange('title', e.target.value)
+                            }
                             placeholder="계약 제목을 입력하세요"
                             className="mt-1"
                           />
@@ -775,7 +1090,7 @@ export default function Home() {
                               </div>
                               <div>
                                 <Label className="font-semibold">수익화 여부</Label>
-                                <p>{contractConditions.isMonetized ? '예' : '아니오'}</p>
+                                <p>{contractConditions.isMonetized ? '' : '아니오'}</p>
                               </div>
                             </div>
                             {contractConditions.isMonetized && (
@@ -881,3 +1196,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home;
