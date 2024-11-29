@@ -242,6 +242,27 @@ const get = async (url: string) => {
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = API_BASE_URL;
 
+// 계약 상세 정보를 가져오는 함수 추가
+const getContractDetails = async (contractId: number) => {
+  try {
+    const response = await axiosInstance.get(`/contract/${contractId}`);
+    return response.data;
+  } catch (error) {
+    console.error("계약 상세 정보 조회 실패:", error);
+    throw error;
+  }
+};
+
+const updateContract = async (contractId: number, updatedContract: Contract) => {
+  try {
+    const response = await axiosInstance.put(`/contracts/${contractId}`, updatedContract);
+    return response.data;
+  } catch (error) {
+    console.error("계약 수정 실패:", error);
+    throw error;
+  }
+};
+
 // 모든 함수들을 객체로 묶어서 export 
 export {
   get,  // 추가
@@ -256,6 +277,7 @@ export {
   rejectContract,
   requestContractModification,
   getGameRevenue,
-  getGamePlayCount
+  getGamePlayCount,
+  updateContract
 };
 

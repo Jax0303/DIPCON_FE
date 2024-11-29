@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import { Bell, User, LogOut, FileSignature, ChevronRight, ChevronDown, HomeIcon, FileText, BarChart2, HelpCircle, Settings, Users, Calendar, Clock, TrendingUp, AlertCircle, Search, Mail, MessageSquare, Plus, X, ArrowUpDown, Check } from 'lucide-react'
+import { Bell, User, LogOut, FileSignature, ChevronRight, ChevronDown, HomeIcon, FileText, BarChart2, HelpCircle, Settings, Users, Calendar, Clock, TrendingUp, AlertCircle, Search, Mail, MessageSquare, Plus, X, ArrowUpDown, Check, Pencil, Loader2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -20,6 +20,7 @@ import axios from "axios"
 import { CustomCondition } from '../types';
 import Image from 'next/image';
 import * as api from '../src/api';
+import { toast } from "react-hot-toast";
 
 // API 기본 URL 설정
 const API_BASE_URL = "http://180.210.82.162"
@@ -146,6 +147,375 @@ interface GameInfo {
   name: string;
 
 }
+
+// 게임 정보 인터페이스 확장
+interface GameDetailInfo {
+  id: string;
+  name: string;
+  description?: string;
+  releaseDate?: string;
+  developer?: string;
+  publisher?: string;
+  genre?: string;
+  tags?: string[];
+  monetization?: {
+    isFree: boolean;
+    price?: number;
+  };
+}
+
+// 계약 상세 정보 다이얼로그 컴포넌트
+const ContractDetailDialog: React.FC<{
+  contract: Contract | null;
+  isOpen: boolean;
+  onClose: () => void;
+  gameInfo: GameDetailInfo | null;
+  onEdit: (contract: Contract) => void;
+}> = ({ contract, isOpen, onClose, gameInfo, onEdit }) => {
+  if (!contract) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-orange-500">
+            계약 상세 정보
+          </DialogTitle>
+        </DialogHeader>
+
+        <Tabs defaultValue="contract" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="contract">계약 정보</TabsTrigger>
+            <TabsTrigger value="game">게임 정보</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="contract" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>기본 정보</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="font-semibold">계약 번호</Label>
+                  <p className="mt-1">{contract.id}</p>
+                </div>
+                <div>
+                  <Label className="font-semibold">계약 상태</Label>
+                  <p className="mt-1">
+                    <span className={`px-2 py-1 rounded-full text-sm ${
+                      contract.status === '완료' ? 'bg-green-100 text-green-800' :
+                      contract.status === '대기중' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {contract.status}
+                    </span>
+                  </p>
+                </div>
+                <div>
+                  <Label className="font-semibold">계약 제목</Label>
+                  <p className="mt-1">{contract.title}</p>
+                </div>
+                <div>
+                  <Label className="font-semibold">최종 수정일</Label>
+                  <p className="mt-1">{contract.last_updated}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>방송 조건</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="font-semibold">최소 방송 시간</Label>
+                    <p className="mt-1">{contract.min_broadcast_length}시간</p>
+                  </div>
+                  <div>
+                    <Label className="font-semibold">최대 방송 시간</Label>
+                    <p className="mt-1">{contract.max_broadcast_length}시간</p>
+                  </div>
+                </div>
+                {contract.custom_conditions && (
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="font-semibold">금지어</Label>
+                      <p className="mt-1">
+                        {contract.custom_conditions.banned_keywords?.length > 0
+                          ? contract.custom_conditions.banned_keywords.join(', ')
+                          : '없음'}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="font-semibold">추가 조건</Label>
+                      <div className="mt-2 space-y-2">
+                        {[
+                          { label: '스포일러 허용', value: !contract.custom_conditions.no_spoilers },
+                          { label: '저작물 수익화 허용', value: contract.custom_conditions.monetization_allowed },
+                          { label: '사운드트랙 사용 허용', value: !contract.custom_conditions.no_bgm_usage },
+                          { label: '폭력적 컨텐츠 허용', value: !contract.custom_conditions.no_violent_content }
+                        ].map((condition, index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <Check className={`h-4 w-4 ${condition.value ? 'text-green-500' : 'text-red-500'}`} />
+                            <span>{condition.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="game" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>게임 정보</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {gameInfo ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="font-semibold">게임명</Label>
+                        <p className="mt-1">{gameInfo.name}</p>
+                      </div>
+                      <div>
+                        <Label className="font-semibold">장르</Label>
+                        <p className="mt-1">{gameInfo.genre || '미지정'}</p>
+                      </div>
+                      <div>
+                        <Label className="font-semibold">개발사</Label>
+                        <p className="mt-1">{gameInfo.developer || '미지정'}</p>
+                      </div>
+                      <div>
+                        <Label className="font-semibold">출시일</Label>
+                        <p className="mt-1">{gameInfo.releaseDate || '미지정'}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-semibold">태그</Label>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {gameInfo.tags?.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-sm"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="font-semibold">게임 설명</Label>
+                      <p className="mt-1">{gameInfo.description || '설명 없음'}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    게임 정보를 불러올 수 없습니다.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        <DialogFooter className="flex justify-between">
+          <div className="flex gap-2">
+            <Button 
+              variant="default" 
+              className="bg-orange-500 hover:bg-orange-600"
+              onClick={() => onEdit(contract)}
+            >
+              <Pencil className="w-4 h-4 mr-2" />
+              계약 수정
+            </Button>
+          </div>
+          <Button variant="outline" onClick={onClose}>
+            닫기
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// 계약 수정 다이얼로그 컴포넌트 추가
+const EditContractDialog: React.FC<{
+  contract: Contract | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (updatedContract: Contract) => Promise<void>;
+}> = ({ contract, isOpen, onClose, onSave }) => {
+  const [formData, setFormData] = useState<Partial<Contract>>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (contract) {
+      setFormData(contract);
+    }
+  }, [contract]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contract) return;
+
+    setIsLoading(true);
+    try {
+      await onSave({ ...contract, ...formData });
+      onClose();
+    } catch (error) {
+      console.error('계약 수정 실패:', error);
+      toast({
+        title: "오류",
+        description: "계약 수정 중 문제가 발생했습니다.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!contract) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-orange-500">
+            계약 수정
+          </DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>기본 정보</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="title">계약 제목</Label>
+                <Input
+                  id="title"
+                  value={formData.title || ''}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="min_broadcast_length">최소 방송 시간</Label>
+                  <Input
+                    id="min_broadcast_length"
+                    type="number"
+                    value={formData.min_broadcast_length || ''}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      min_broadcast_length: parseInt(e.target.value) 
+                    })}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="max_broadcast_length">최대 방송 시간</Label>
+                  <Input
+                    id="max_broadcast_length"
+                    type="number"
+                    value={formData.max_broadcast_length || ''}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      max_broadcast_length: parseInt(e.target.value) 
+                    })}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>추가 조건</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="banned_keywords">금지어 (쉼표로 구분)</Label>
+                <Input
+                  id="banned_keywords"
+                  value={formData.custom_conditions?.banned_keywords?.join(', ') || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    custom_conditions: {
+                      ...formData.custom_conditions,
+                      banned_keywords: e.target.value.split(',').map(k => k.trim())
+                    }
+                  })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                {[
+                  { 
+                    id: 'no_spoilers', 
+                    label: '스포일러 금지',
+                    field: 'no_spoilers'
+                  },
+                  { 
+                    id: 'monetization_allowed', 
+                    label: '저작물 수익화 허용',
+                    field: 'monetization_allowed'
+                  },
+                  { 
+                    id: 'no_bgm_usage', 
+                    label: '사운드트랙 사용 금지',
+                    field: 'no_bgm_usage'
+                  },
+                  { 
+                    id: 'no_violent_content', 
+                    label: '폭력적 컨텐츠 금지',
+                    field: 'no_violent_content'
+                  }
+                ].map((condition) => (
+                  <div key={condition.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={condition.id}
+                      checked={formData.custom_conditions?.[condition.field] || false}
+                      onCheckedChange={(checked) => setFormData({
+                        ...formData,
+                        custom_conditions: {
+                          ...formData.custom_conditions,
+                          [condition.field]: checked
+                        }
+                      })}
+                    />
+                    <Label htmlFor={condition.id}>{condition.label}</Label>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
+              취소
+            </Button>
+            <Button 
+              type="submit" 
+              className="bg-orange-500 hover:bg-orange-600"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : null}
+              저장
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 // 독립적인 하위 컴포넌트들을 먼저 정의
 const ContractDetails: React.FC = () => {
@@ -328,6 +698,9 @@ const Home: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<string>('');
   const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [gameDetailInfo, setGameDetailInfo] = useState<GameDetailInfo | null>(null);
 
   // 컴포넌트 마운트 시 계약 목록과 상태 목록 가져오기
   useEffect(() => {
@@ -486,31 +859,19 @@ const Home: React.FC = () => {
   // 계약 상세 정보 조회 함수
   const handleContractSelect = async (contract: Contract) => {
     setSelectedContract(contract);
+    setIsDetailDialogOpen(true);
+    
     if (contract.game_id) {
       try {
-        const [monetizedStatus, tags] = await Promise.all([
-          api.getGameMonetizedStatus(contract.game_id),
-          api.getGameTags(contract.game_id)
-        ]);
-        setGameMonetizedStatus(monetizedStatus);
-        setGameTags(tags);
-
-        const endDate = new Date().toISOString().split('T')[0];
-        const startDate = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split('T')[0];
-
-        const [revenue, playCount] = await Promise.all([
-          api.getGameRevenue(contract.game_id, startDate, endDate),
-          api.getGamePlayCount(contract.game_id, startDate, endDate)
-        ]);
-        setRevenueData(revenue);
-        setPlayCountData(playCount);
+        // 게임 정보 조회
+        const gameInfo = await api.getGameInfo(contract.game_id);
+        setGameDetailInfo(gameInfo);
       } catch (error) {
-        console.error('데이터 조회 실패:', error);
+        console.error('게임 정보 조회 실패:', error);
+        setGameDetailInfo(null);
       }
     }
-  }
+  };
 
   // 계약 목록 테이블에 클릭 이벤트 추가
   const ContractTable = () => (
@@ -565,6 +926,33 @@ const Home: React.FC = () => {
       setActiveMenu(menuKey);
       setActiveSubMenu(null); // 서브메뉴 선택 초기화
       setActiveTab(menuKey);
+    }
+  };
+
+  const handleEditContract = (contract: Contract) => {
+    setSelectedContract(contract);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveContract = async (updatedContract: Contract) => {
+    try {
+      await api.updateContract(Number(updatedContract.id), updatedContract);
+      // 계약 목록 새로고침
+      const updatedContracts = await api.getContracts();
+      setContracts(updatedContracts);
+      
+      setIsEditDialogOpen(false);
+      toast({
+        title: "성공",
+        description: "계약이 성공적으로 수정되었습니다.",
+      });
+    } catch (error) {
+      console.error('계약 수정 실패:', error);
+      toast({
+        title: "오류",
+        description: "계약 수정 중 문제가 발생했습니다.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -1193,6 +1581,21 @@ const Home: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ContractDetailDialog
+        contract={selectedContract}
+        isOpen={isDetailDialogOpen}
+        onClose={() => setIsDetailDialogOpen(false)}
+        gameInfo={gameDetailInfo}
+        onEdit={handleEditContract}
+      />
+
+      <EditContractDialog
+        contract={selectedContract}
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        onSave={handleSaveContract}
+      />
     </div>
   )
 }
